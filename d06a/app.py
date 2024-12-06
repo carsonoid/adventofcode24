@@ -1,7 +1,7 @@
 import sys
 import collections
-from gridlib.gridlib import Grid
-from gridlib.gridlib import CardinalDirections, DirNorth
+from .gridlib.gridlib import Grid
+from .gridlib.gridlib import CardinalDirections, DirNorth
 
 grid = Grid(filepath=sys.argv[1])
 grid.print()
