@@ -1,51 +1,25 @@
 import sys
 import collections
+from gridlib.gridlib import Grid
+from gridlib.gridlib import CardinalDirections, DirNorth
 
-with open(sys.argv[1]) as input:
-    grid = [list(x.strip()) for x in input.readlines()]
+grid = Grid(filepath=sys.argv[1])
+grid.print()
 
-
-def print_grid(g):
-    [print("".join(row)) for row in g]
-
-
-def get(y, x):
-    if y < 0 or y >= len(grid) or x < 0 or x >= len(grid[0]):
-        return "O"
-    return grid[y][x]
-
-
-print_grid(grid)
-
-for y, row in enumerate(grid):
-    for x, c in enumerate(row):
-        if c == "^":
-            pos = (y, x)
-
-dir = "N"
-dirs = ["N", "E", "S", "W"]
+cur = grid.find("^")
+dir = DirNorth
 positions = collections.defaultdict(str)
 
 while True:
-    positions[str(pos)] = True
+    positions[str(cur)] = True
 
-    if dir == "N":
-        next = (pos[0] - 1, pos[1])
-    if dir == "E":
-        next = (pos[0], pos[1] + 1)
-    if dir == "S":
-        next = (pos[0] + 1, pos[1])
-    if dir == "W":
-        next = (pos[0], pos[1] - 1)
-
-    c = get(*next)
-    if c == "O":
+    next = grid.get_relative(cur, dir)
+    if not next:
         break
 
-    if c == "#":
-        dir = dirs[(dirs.index(dir) + 1) % 4]
+    if next[2] == "#":
+        dir = CardinalDirections[(CardinalDirections.index(dir) + 1) % 4]
     else:
-        pos = next
-
+        cur = next
 
 print(len(positions.keys()))
