@@ -14,6 +14,9 @@ operators = ["*", "+"]
 def solvable(want, x, remaining):
     y = remaining[0]
 
+    if x > want:
+        return False
+
     if len(remaining) == 1:
         if x * y == want:
             return True
