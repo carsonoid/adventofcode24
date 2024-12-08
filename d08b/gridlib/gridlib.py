@@ -30,10 +30,21 @@ AdjacentDirections = [
     DirNorthWest,
 ]
 
-# x, y, value
-Cell: TypeAlias = tuple[int, int, str]
-
 U = TypeVar("U")
+
+
+class Cell:
+    x = 0
+    y = 0
+    value = ""
+
+    def __init__(self, x: int, y: int, value: str) -> None:
+        self.x = x
+        self.y = y
+        self.value = value
+
+    def __str__(self):
+        return f"({self.x}, {self.y}, {self.value})"
 
 
 class Grid:
@@ -55,47 +66,45 @@ class Grid:
             print("".join(str(x) for x in row))
 
     def in_bounds(self, c: Cell):
-        x, y, _ = c
-        return 0 <= x < len(self.rows[0]) and 0 <= y < len(self.rows)
+        return 0 <= c.x < len(self.rows[0]) and 0 <= c.y < len(self.rows)
 
     def get_at(self, x: int, y: int, dir: Direction = None) -> Cell:
         if dir:
             dx, dy = dir
             x, y = x + dx, y + dy
-        if self.in_bounds((x, y, "")):
-            return (x, y, self.rows[y][x])
+        if self.in_bounds(Cell(x, y, "")):
+            return Cell(x, y, self.rows[y][x])
         else:
             return None
 
     def set_at(self, x: int, y: int, value: str) -> None:
-        if self.in_bounds((x, y, "")):
+        if self.in_bounds(Cell(x, y, "")):
             self.rows[y][x] = value
 
     def get_relative(self, c: Cell, dir: Direction) -> Cell:
-        return self.get_at(c[0], c[1], dir)
+        return self.get_at(c.x, c.y, dir)
 
     # make it so we can "for" loop over the class by looping the cells
     def __iter__(self):
         for y, row in enumerate(self.rows):
-            for x, cell in enumerate(row):
-                yield (x, y, cell)
+            for x, v in enumerate(row):
+                yield Cell(x, y, v)
 
     def find(self, s):
         for cell in self:
-            if cell[2] == s:
+            if cell.value == s:
                 return cell
         raise Exception("Not found")
 
     def cardinal_cells(self, c: Cell) -> list[Cell]:
         cells = []
-        x, y, _ = c
         for dx, dy in [
             DirNorth,
             DirEast,
             DirSouth,
             DirWest,
         ]:
-            nx, ny = x + dx, y + dy
+            nx, ny = c.x + dx, c.y + dy
             new_cell = (nx, ny, self.rows[ny][nx])
             if self.in_bounds(new_cell):
                 cells.append(new_cell)
@@ -103,14 +112,13 @@ class Grid:
 
     def adjacent_cells(self, c: Cell) -> list[Cell]:
         cells = []
-        x, y, _ = c
         for dx, dy in [
             DirNorth,
             DirEast,
             DirSouth,
             DirWest,
         ]:
-            nx, ny = x + dx, y + dy
+            nx, ny = c.x + dx, c.y + dy
             new_cell = (nx, ny, self.rows[ny][nx])
             if self.in_bounds(new_cell):
                 cells.append(new_cell)
