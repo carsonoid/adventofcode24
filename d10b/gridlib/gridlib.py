@@ -53,15 +53,24 @@ class Grid:
     rows = []
 
     def __init__(
-        self, rows: list[list[U]] = None, filepath: str = None, s: str = None
+        self,
+        rows: list[list[U]] = None,
+        filepath: str = None,
+        s: str = None,
+        default_factory=str,
     ) -> None:
         if rows:
             self.rows = rows
         elif filepath:
             with open(filepath) as input:
-                self.rows = [[x for x in row.strip()] for row in input.readlines()]
+                self.rows = [
+                    [default_factory(x) for x in row.strip()]
+                    for row in input.readlines()
+                ]
         elif s:
-            self.rows = [[x for x in row.split()] for row in s.split("\n")]
+            self.rows = [
+                [default_factory(x) for x in row.split()] for row in s.split("\n")
+            ]
 
     def print(self) -> None:
         for row in self.rows:

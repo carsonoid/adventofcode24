@@ -2,13 +2,13 @@ import sys
 import collections
 from .gridlib.gridlib import Grid
 
-grid = Grid(filepath=sys.argv[1])
+grid = Grid(filepath=sys.argv[1], default_factory=int)
 grid.print()
 
 
 def search(cell, ends):
     match cell.value:
-        case "9":
+        case 9:
             ends[cell.id] = ends[cell.id] + 1
 
     for n in grid.cardinal_cells(cell):
@@ -22,7 +22,7 @@ def search(cell, ends):
 
 sum = 0
 for cell in grid:
-    if cell.value != "0":
+    if cell.value != 0:
         continue
     ends = search(cell, collections.defaultdict(int))
     print(ends)
