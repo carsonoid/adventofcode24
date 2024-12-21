@@ -166,6 +166,6 @@ def get_move_count(cur, next, depth):
 
 total = 0
 for code in codes:
-    total += int(code.rstrip("A")) * get_length(code, 3)
+    total += int(code.rstrip("A")) * get_length(code, 26)
 
 print(total)
