@@ -32,19 +32,13 @@ distances, path = bfs(start)
 
 saved_totals = defaultdict(int)
 
-max_comb = math.comb(len(path), 2)
-i = 0
-for p1, p2 in itertools.combinations(path, 2):
-    i += 1
-    if i % 1000 == 0:
-        print(f"Progress: {i}/{max_comb}")
-    taken = path.index(p1)
-    remaining = len(path) - 1 - path.index(p2)
-    d = abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
-    if d <= 20:
-        time = taken + remaining + d
-        saved = len(path) - 1 - time
-        saved_totals[saved] += 1
+for i in range(len(path)):
+    p1 = path[i]
+    for j in range(i + 100, len(path)):
+        p2 = path[j]
+        d = abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+        if d <= 20:
+            saved_totals[j - i - d] += 1
 
 total = 0
 for saved, times in saved_totals.items():
