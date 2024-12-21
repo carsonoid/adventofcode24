@@ -1,0 +1,81 @@
+import sys
+from collections import deque, defaultdict
+from dataclasses import dataclass
+from .gridlib.gridlib import Grid, DirNorth, DirSouth, DirEast, DirWest
+
+
+@dataclass
+class Node:
+    id: str
+    edges: dict
+
+    def add_edge(self, dir, edge):
+        self.edges.append((dir, edge))
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+
+def get_keypad_nodes(s):
+    grid = Grid(s=s)
+
+    nodes = {}
+    for cell in grid:
+        if cell.value != ".":
+            nodes[cell.value] = Node(cell.value, [])
+
+    for cell in grid:
+        if cell.value == ".":
+            continue
+
+        node = nodes[cell.value]
+        if (r := grid.get_relative(cell, DirNorth)) and r.value != ".":
+            node.add_edge("^", nodes[r.value])
+
+        if (r := grid.get_relative(cell, DirSouth)) and r.value != ".":
+            node.add_edge("v", nodes[r.value])
+
+        if (r := grid.get_relative(cell, DirEast)) and r.value != ".":
+            node.add_edge(">", nodes[r.value])
+
+        if (r := grid.get_relative(cell, DirWest)) and r.value != ".":
+            node.add_edge("<", nodes[r.value])
+
+    return nodes
+
+
+# get_movesset returns a dict of the shortest moves to get from 'start' to all other nodes
+def get_moveset(start: str, nodes: dict):
+    q = deque()
+    q.append(("", nodes[str(start)]))
+    movesets = defaultdict(list)
+    seen = set()
+
+    while q:
+        dir, cur = q.popleft()
+        if cur.id in seen:
+            continue
+        seen.add(cur.id)
+        if dir:
+            movesets[cur.id].append(dir)
+
+        for dir, node in cur.edges:
+            q.append((dir, node))
+
+    return movesets
+
+
+if __name__ == "__main__":
+    with open(sys.argv[1]) as f:
+        codes = f.read().strip().split("\n")
+
+    print(codes)
+
+    numpad_nodes = get_keypad_nodes("789\n456\n123\n.0A")
+
+    movesets = get_moveset(7, numpad_nodes)
+
+    print(movesets)
+
+    # arrow_nodes = get_keypad_nodes(".^A\n<v>")
+    # print(arrow_nodes.keys())
